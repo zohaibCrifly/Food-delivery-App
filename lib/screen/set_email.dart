@@ -78,6 +78,7 @@ class _EmailScreenState extends State<EmailScreen> {
                   onClicked: () => Navigator.of(context)
                       .push(AnimateRoute(page: const SetPassword())),
                   isNext: onNext,
+                  buttonText: 'Next',
                 ),
               ],
             ),

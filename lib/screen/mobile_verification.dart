@@ -142,6 +142,7 @@ class _MobileVerificationState extends State<MobileVerification> {
                   onClicked: () => Navigator.of(context)
                       .push(AnimateRoute(page: const OTPVerification())),
                   isNext: onNext,
+                  buttonText: 'Next',
                 ),
               ],
             )

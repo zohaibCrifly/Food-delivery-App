@@ -92,6 +92,7 @@ class _SetPasswordState extends State<SetPassword> {
                     onClicked: () => Navigator.of(context)
                         .push(AnimateRoute(page: const NameScreen())),
                     isNext: onNext,
+                    buttonText: 'Next',
                   ),
                 ],
               )

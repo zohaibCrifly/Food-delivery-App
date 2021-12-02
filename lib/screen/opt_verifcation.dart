@@ -86,6 +86,7 @@ class _OTPVerificationState extends State<OTPVerification> {
                   onClicked: () => Navigator.of(context)
                       .push(AnimateRoute(page: const EmailScreen())),
                   isNext: onNext,
+                  buttonText: 'Next',
                 ),
               ],
             ),

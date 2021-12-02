@@ -5,7 +5,9 @@
 import 'package:flutter/material.dart';
 //import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+// import 'package:location/location.dart';
+// import 'package:geocoder/geocoder.dart';
+import 'package:geocoding/geocoding.dart';
 
 class LocationPin extends StatefulWidget {
   const LocationPin({Key? key, required this.mapHeight}) : super(key: key);
@@ -16,84 +18,51 @@ class LocationPin extends StatefulWidget {
 }
 
 class _LocationPinState extends State<LocationPin> {
-  double lat = 213239, lng = 328237;
-  //late double lat, lng;
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
+  // double lat = 33.688592146671425, lng = 73.04865280603227;
+  LatLng currentPosition = LatLng(33.688592146671425, 73.04865280603227);
+  String address = "ABC road, Texas 912322";
+  LatLng a = LatLng(33.688592146671425, 73.04865280603227);
+  getAddress() async {
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+        currentPosition.latitude, currentPosition.longitude);
+    Placemark place = placemarks.first;
 
-  //   a();
-  // }
-
-  // var getlocation;
-
-  // Future a() async {
-  //   setState(() {
-  //     getlocation = Location().getLocation();
-  //     lat = getlocation['latitude'];
-  //     lng = getlocation['langitude'];
-  //   });
-  // }
-
-  _currentlocation(controller) {
-    Location().onLocationChanged.listen((event) {
-      controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-          target: LatLng(event.latitude!, event.longitude!), zoom: 15)));
-      lat = event.latitude!.toDouble();
-      lng = event.longitude!.toDouble();
-    });
+    address =
+        '${place.street} , ${place.name} ,${place.subLocality} , ${place.country}';
   }
 
-  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Padding(
-        //   padding: const EdgeInsets.only(top: 50.0),
-        //   child: Container(
-        //     height: 50,
-        //     color: Colors.white,
-        //     child: Row(
-        //       mainAxisAlignment: MainAxisAlignment.spaceAround,
-        //       children: [
-        //         Text(
-        //           .toString() +
-        //               'latitude' +
-        //               lat.toString(),
-        //           style: Theme.of(context).textTheme.bodyText2,
-        //         ),
-        //         Text(
-        //           'longitude' + lng.toString(),
-        //           style: Theme.of(context).textTheme.headline1,
-        //         ),
-        //       ],
-        //     ),
-        //   ),
-        // ),
         SizedBox(
           height: widget.mapHeight,
           child: GoogleMap(
             initialCameraPosition:
-                CameraPosition(target: LatLng(lat, lng), zoom: 15),
+                CameraPosition(target: currentPosition, zoom: 15),
             // onMapCreated: _currentlocation,
-            onCameraMove: _currentlocation,
-            myLocationEnabled: false,
+            onCameraMove: (position) {
+              currentPosition = position.target;
+            },
+            // myLocationEnabled: true,
             zoomControlsEnabled: true,
             markers: {
               Marker(
-                  draggable: true,
-                  markerId: MarkerId('1'),
-                  position: LatLng(lat, lng),
-                  onDragEnd: (newposition) {
-                    setState(() {
-                      lat = newposition.latitude;
-                      lng = newposition.longitude;
-                    });
-                  }),
+                draggable: true,
+                markerId: MarkerId('1'),
+                position: currentPosition,
+                onDragEnd: (newposition) {
+                  setState(() {
+                    currentPosition =
+                        LatLng(newposition.latitude, newposition.longitude);
+
+                    getAddress();
+                  });
+                },
+              ),
             },
           ),
         ),
+        Text(address),
       ],
     );
   }

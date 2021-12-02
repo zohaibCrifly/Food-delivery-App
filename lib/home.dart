@@ -8,6 +8,7 @@ import 'package:food_ordering_system/screen/privacy_policy.dart';
 import 'package:food_ordering_system/style/style.dart';
 import 'package:food_ordering_system/screen/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -49,7 +50,7 @@ class HomeScreen extends StatelessWidget {
             //   MainMenu()
             //HomeSceena()
             // EnableNotification()
-            AddressInfo()
+            AddressInfo(position: LatLng(0, 0), currentAddress: '')
         // MobileVerification()
         );
   }

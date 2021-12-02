@@ -1,12 +1,15 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:food_ordering_system/screen/adjust_pin.dart';
-import 'package:food_ordering_system/screen/widgets/adjust_location.dart';
+import 'package:food_ordering_system/screen/enable_notification.dart';
+import 'package:food_ordering_system/screen/widgets/animatepage_route.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class AddressInfo extends StatefulWidget {
-  const AddressInfo({Key? key}) : super(key: key);
+  final String currentAddress;
+  final LatLng position;
+  const AddressInfo(
+      {Key? key, required this.currentAddress, required this.position})
+      : super(key: key);
 
   @override
   _AddressInfoState createState() => _AddressInfoState();
@@ -14,28 +17,62 @@ class AddressInfo extends StatefulWidget {
 
 class _AddressInfoState extends State<AddressInfo> {
   List<Map> deliveryOptions = [
-    {'icon': Icons.door_back_door_rounded, 'title': 'Leave at door'},
-    {'icon': Icons.person, 'title': 'Meet at door'},
-    {'icon': Icons.car_repair, 'title': 'Meet at Shop'},
+    {
+      'icon': Icons.door_back_door_rounded,
+      'title': 'Leave at door',
+      'selected': true,
+    },
+    {
+      'icon': Icons.person,
+      'title': 'Meet at door',
+      'selected': false,
+    },
+    {
+      'icon': Icons.car_repair,
+      'title': 'Meet at Shop',
+      'selected': false,
+    },
   ];
+  bool flateFloor = false;
+  bool business = false;
+  bool onNext = false;
+  bool addressLable = false;
 
-  // final LatLng _initialcameraposition = LatLng(20.5937, 78.9629);
-  // late GoogleMapController _controller;
-  // final Location _location = Location();
+  String getAddress() {
+    if (widget.currentAddress == '') {
+      return 'ABC road, Texas 912322';
+    } else {
+      return widget.currentAddress;
+    }
+  }
 
-  // void _onMapCreated(GoogleMapController _cntlr) {
-  //   _controller = _cntlr;
-  //   _location.onLocationChanged.listen((l) {
-  //     _controller.animateCamera(
-  //       CameraUpdate.newCameraPosition(
-  //         CameraPosition(
-  //             target:
-  //                 LatLng((l.latitude)!.toDouble(), (l.longitude)!.toDouble()),
-  //             zoom: 15),
-  //       ),
-  //     );
-  //   });
-  // }
+  LatLng getPosition() {
+    if (widget.position == LatLng(0, 0)) {
+      return LatLng(33.688592146671425, 73.04865280603227);
+    } else {
+      return widget.position;
+    }
+  }
+
+  selectOption(a) {
+    setState(() {
+      for (int j = 0; j < deliveryOptions.length; j++) {
+        if (j == a) {
+          deliveryOptions[j]['selected'] = true;
+        } else {
+          deliveryOptions[j]['selected'] = false;
+        }
+      }
+
+      //   for (int i = 0; i < deliveryOptions.length; i++) {
+      //     if (a == i) {
+      //       deliveryOptions[i]['selected'] == true;
+      //     } else {
+      //       deliveryOptions[i]['selected'] == false;
+      //     }
+      //   }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,25 +117,23 @@ class _AddressInfoState extends State<AddressInfo> {
                     alignment: Alignment.bottomCenter,
                     children: [
                       SizedBox(
-                          height: 170,
-                          child: LocationPin(
-                            mapHeight: 170,
-                          )
-                          // GoogleMap(
-                          //   initialCameraPosition:
-                          //       CameraPosition(target: _initialcameraposition),
-                          //   mapType: MapType.normal,
-                          //   onMapCreated: _onMapCreated,
-                          //   myLocationEnabled: false,
-                          //   zoomControlsEnabled: false,
-                          // ),
-                          ),
-                      // Image.asset(
-                      //   'images/map.png',
-                      //   width: MediaQuery.of(context).size.width,
-                      //   height: 180,
-                      //   fit: BoxFit.cover,
-                      // ),
+                        height: 170,
+                        child: GoogleMap(
+                          initialCameraPosition:
+                              CameraPosition(target: getPosition(), zoom: 15),
+                          // onCameraMove: (position) {
+                          //   position.target;
+                          // },
+                          // zoomControlsEnabled: true,
+                          markers: {
+                            Marker(
+                              draggable: true,
+                              markerId: MarkerId('1'),
+                              position: getPosition(),
+                            ),
+                          },
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 20),
                         child: ElevatedButton(
@@ -125,9 +160,12 @@ class _AddressInfoState extends State<AddressInfo> {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              'ABC road, Texas 912322',
-                              style: Theme.of(context).textTheme.bodyText1,
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width - 40,
+                              child: Text(
+                                getAddress(),
+                                style: Theme.of(context).textTheme.bodyText1,
+                              ),
                             ),
                           ],
                         ),
@@ -135,9 +173,24 @@ class _AddressInfoState extends State<AddressInfo> {
                           height: 20,
                         ),
                         TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              if (value == '') {
+                                flateFloor = true;
+                                onNext = false;
+                              } else {
+                                flateFloor = false;
+                                if (!flateFloor && !business && !addressLable) {
+                                  onNext = true;
+                                }
+                              }
+                            });
+                          },
                           decoration: InputDecoration(
                               contentPadding: EdgeInsets.symmetric(
                                   vertical: 12, horizontal: 15),
+                              errorText:
+                                  flateFloor ? 'Enter Flate/Suite/Floor' : null,
                               hintText: 'Flat/ Suite/ Floor',
                               fillColor: Color(0xFFF2F2F2),
                               filled: true,
@@ -152,9 +205,25 @@ class _AddressInfoState extends State<AddressInfo> {
                           height: 10,
                         ),
                         TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              if (value == '') {
+                                business = true;
+                                onNext = false;
+                              } else {
+                                business = false;
+                                if (!flateFloor && !business && !addressLable) {
+                                  onNext = true;
+                                }
+                              }
+                            });
+                          },
                           decoration: InputDecoration(
                               contentPadding: EdgeInsets.symmetric(
                                   vertical: 12, horizontal: 15),
+                              errorText: business
+                                  ? 'Enter Business or bulding name'
+                                  : null,
                               hintText: 'Business or building name',
                               fillColor: Color(0xFFF2F2F2),
                               filled: true,
@@ -194,20 +263,26 @@ class _AddressInfoState extends State<AddressInfo> {
                                 Padding(
                                   padding: const EdgeInsets.only(right: 10),
                                   child: ElevatedButton(
+                                    onPressed: () {
+                                      selectOption(i);
+                                    },
                                     style: ElevatedButton.styleFrom(
 
                                         // padding: EdgeInsets.symmetric(
                                         //     vertical: 10, horizontal: 20),
-                                        primary: Color(0xFFF2F2F2),
+                                        primary: deliveryOptions[i]['selected']
+                                            ? Color(0xFFFB6D3A)
+                                            : Color(0xFFF2F2F2),
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(50))),
-                                    onPressed: () {},
                                     child: Row(
                                       children: [
                                         Icon(
                                           deliveryOptions[i]['icon'],
-                                          color: Colors.black,
+                                          color: deliveryOptions[i]['selected']
+                                              ? Colors.white
+                                              : Colors.black,
                                           size: 20,
                                         ),
                                         SizedBox(
@@ -216,7 +291,10 @@ class _AddressInfoState extends State<AddressInfo> {
                                         Text(
                                           deliveryOptions[i]['title'],
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: deliveryOptions[i]
+                                                      ['selected']
+                                                  ? Colors.white
+                                                  : Colors.black,
                                               // fontWeight: FontWeight.normal,
                                               fontSize: 12),
                                         ),
@@ -251,9 +329,25 @@ class _AddressInfoState extends State<AddressInfo> {
                           height: 10,
                         ),
                         TextField(
+                          onChanged: (valuea) {
+                            setState(() {
+                              if (valuea == '') {
+                                addressLable = true;
+                                onNext = false;
+                              } else {
+                                addressLable = false;
+                                if (!flateFloor && !business && !addressLable) {
+                                  onNext = true;
+                                }
+                              }
+                            });
+                          },
                           decoration: InputDecoration(
                               contentPadding: EdgeInsets.symmetric(
                                   vertical: 12, horizontal: 15),
+                              errorText: addressLable
+                                  ? 'Enter the address label'
+                                  : null,
                               hintText: 'Add a label (e.g. school)',
                               fillColor: Color(0xFFF2F2F2),
                               filled: true,
@@ -279,14 +373,21 @@ class _AddressInfoState extends State<AddressInfo> {
                     width: MediaQuery.of(context).size.width - 40,
                     child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            primary: Color(0xFFF2F2F2),
+                            primary:
+                                onNext ? Color(0xFFFB6D3A) : Color(0xFFF2F2F2),
                             padding: EdgeInsets.all(15),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15))),
-                        onPressed: () {},
+                        onPressed: () {
+                          onNext
+                              ? Navigator.of(context).push(AnimateRoute(
+                                  page: const EnableNotification()))
+                              : null;
+                        },
                         child: Text(
                           'Save and continue',
-                          style: TextStyle(color: Color(0xFF64748B)),
+                          style: TextStyle(
+                              color: onNext ? Colors.white : Color(0xFF64748B)),
                         )),
                   ),
                   SizedBox(

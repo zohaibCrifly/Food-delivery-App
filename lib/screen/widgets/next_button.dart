@@ -5,8 +5,13 @@ class NextButton extends StatefulWidget {
   // ignore: prefer_typing_uninitialized_variables
   final onClicked;
   final bool isNext;
-  const NextButton({Key? key, required this.onClicked, required this.isNext})
-      : super(key: key);
+  final String buttonText;
+  const NextButton({
+    Key? key,
+    required this.onClicked,
+    required this.isNext,
+    required this.buttonText,
+  }) : super(key: key);
 
   @override
   _NextButtonState createState() => _NextButtonState();
@@ -36,7 +41,7 @@ class _NextButtonState extends State<NextButton> {
       child: Row(
         children: [
           Text(
-            "Next",
+            widget.buttonText,
             style: GoogleFonts.nunito(
               textStyle: const TextStyle(
                 color: Colors.white,

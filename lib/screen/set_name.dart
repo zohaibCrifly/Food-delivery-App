@@ -120,6 +120,7 @@ class _NameScreenState extends State<NameScreen> {
                   onClicked: () => Navigator.of(context)
                       .push(AnimateRoute(page: const PrivacyPolicy())),
                   isNext: onNext,
+                  buttonText: 'Next',
                 ),
               ],
             ),

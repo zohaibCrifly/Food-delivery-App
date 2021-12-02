@@ -110,6 +110,7 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
                   // Navigator.of(context)
                   //     .push(AnimateRoute(page: const OTPVerification())),
                   isNext: onNext,
+                  buttonText: 'Next',
                 ),
               ],
             )
