@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food_ordering_system/screen/browser.dart';
 import 'package:food_ordering_system/screen/home_screen.dart';
+import 'package:food_ordering_system/screen/orders.dart';
 
 class MainMenu extends StatefulWidget {
   const MainMenu({Key? key}) : super(key: key);
@@ -13,12 +14,7 @@ class _MainMenuState extends State<MainMenu> {
   List page = [
     HomeSceena(),
     Browser(),
-    Center(
-      child: Text(
-        'Orders',
-        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-      ),
-    ),
+    OrderBook(),
     Center(
       child: Text(
         'Account',

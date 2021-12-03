@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:food_ordering_system/data/productdata.dart';
+import 'package:food_ordering_system/screen/cart.dart';
 
 class ProductPage extends StatefulWidget {
   final ProductData data;
@@ -48,6 +49,20 @@ class _ProductPageState extends State<ProductPage> {
         }
       }
     });
+  }
+
+  double totalProductPrice = 0;
+  getPrice() {
+    setState(() {
+      totalProductPrice = (widget.data.price +
+              size[selectedSizePriceIndex]['price'] +
+              totalExtra) *
+          quantity;
+    });
+    return (widget.data.price +
+            size[selectedSizePriceIndex]['price'] +
+            totalExtra) *
+        quantity;
   }
 
   double totalExtra = 0;
@@ -301,7 +316,11 @@ class _ProductPageState extends State<ProductPage> {
                       width: MediaQuery.of(context).size.width - 40,
                       child: ElevatedButton(
                         onPressed: () {
-                          // decreaseQuantity();
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => Cart(
+                                  price: totalProductPrice,
+                                  quantity: quantity,
+                                  data: widget.data)));
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -317,13 +336,7 @@ class _ProductPageState extends State<ProductPage> {
                               width: 50,
                             ),
                             Text(
-                              '\$' +
-                                  ((widget.data.price +
-                                              size[selectedSizePriceIndex]
-                                                  ['price'] +
-                                              totalExtra) *
-                                          quantity)
-                                      .toString(),
+                              '\$' + (getPrice().toString()),
                               style: TextStyle(fontWeight: FontWeight.bold),
                             )
                           ],
