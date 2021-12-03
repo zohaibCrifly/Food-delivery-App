@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:food_ordering_system/screen/address_info.dart';
+//import 'package:food_ordering_system/screen/global/globallocation.dart';
 //import 'package:food_ordering_system/screen/widgets/adjust_location.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+//import 'package:provider/provider.dart';
 
 class Pin extends StatefulWidget {
   const Pin({Key? key}) : super(key: key);
@@ -63,7 +65,11 @@ class _PinState extends State<Pin> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
-                child: Icon(Icons.close),
+                child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(Icons.close)),
               ),
             ],
           ),

@@ -2,9 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:food_ordering_system/home.dart';
+import 'package:food_ordering_system/screen/global/globallocation.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(
+    providers: [ChangeNotifierProvider(create: (_) => GlobalLocation())],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
